@@ -1,6 +1,7 @@
 import * as express from "express";
 import * as foo from "./foo";
 import * as users from "./users";
+import * as player from "./players";
 
 import { HogeController } from "../controllers";
 
@@ -15,3 +16,5 @@ router.get("/", (req, res, next) => {
 router.get("/errorSample", hogeController.errorResponse);
 router.use("/foo", foo.router);
 router.use("/users", users.router);
+
+router.use("/players", player.router);
