@@ -15,13 +15,12 @@ export class PlayerController
     try
     {
       const result = await playerService.getIdName(dbConnection);
-      
+
       res.status(200);
       res.json(result);
     } 
     catch (e)
     {
-      await dbConnection.rollback();
       next(e);
     } 
     finally 
