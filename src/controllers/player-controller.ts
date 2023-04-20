@@ -14,10 +14,8 @@ export class PlayerController
     const dbConnection = await dbPool.getConnection();
     try
     {
-      await dbConnection.beginTransaction(); // トランザクション例
       const result = await playerService.getIdName(dbConnection);
-
-      await dbConnection.commit();
+      
       res.status(200);
       res.json(result);
     } 
