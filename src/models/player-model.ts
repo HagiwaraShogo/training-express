@@ -1,6 +1,8 @@
 import { PoolConnection } from "mysql2/promise";
 import { Player } from "../interfaces/Player";
 import { RowDataPacket, OkPacket } from "mysql2";
+import { NotFoundError } from "../interfaces/my-error";
+import { error } from "console";
 
 const getIdName = async (dbConnection: PoolConnection): Promise<Player[]> => {
     const [rows] = await dbConnection.query<RowDataPacket[]>(
@@ -21,6 +23,11 @@ const getDataById = async (id:number, dbConnection: PoolConnection): Promise<Pla
   const[rows] = await dbConnection.query<RowDataPacket[]>(
       "SELECT * FROM `players` WHERE id = ?;",id
   );
+
+  if(!rows[0])
+  {
+    throw new NotFoundError('user not found.');
+  } 
 
   const result: Player = {
       id: rows[0].id,
