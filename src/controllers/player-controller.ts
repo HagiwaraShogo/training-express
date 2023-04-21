@@ -3,6 +3,7 @@ import { dbPool, transactionHelper } from "../helpers/db-helper";
 import * as playerService from "../services/player-service";
 //import { getIdName } from "../services/player-service";
 import { Player } from "../interfaces/Player";
+import { NotFoundError } from "../interfaces/my-error";
 
 export class PlayerController
 {
@@ -22,6 +23,32 @@ export class PlayerController
     catch (e)
     {
       next(e);
+    } 
+    finally 
+    {
+      dbConnection.release(); // connectionを返却
+    }
+  }
+
+  async getDataById(
+    req: Request,
+    res: Response,
+    next: NextFunction
+  ): Promise<void> {
+    const PlayerId = parseInt(req.params.id);
+    const dbConnection = await dbPool.getConnection();
+    try
+    {
+      const result = await playerService.getDataById(PlayerId, dbConnection);
+
+      res.status(200);
+      res.json(result);
+    } 
+    catch (e)
+    {
+      if (e instanceof NotFoundError) {
+        res.status(404).json({ message: e.message });
+      }
     } 
     finally 
     {
