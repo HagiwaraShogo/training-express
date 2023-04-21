@@ -2,7 +2,6 @@ import { PoolConnection } from "mysql2/promise";
 import { Player } from "../interfaces/Player";
 import { RowDataPacket, OkPacket } from "mysql2";
 import { NotFoundError } from "../interfaces/my-error";
-import { error } from "console";
 
 const getIdName = async (dbConnection: PoolConnection): Promise<Player[]> => {
     const [rows] = await dbConnection.query<RowDataPacket[]>(

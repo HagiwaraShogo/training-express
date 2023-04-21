@@ -3,6 +3,7 @@ import { dbPool, transactionHelper } from "../helpers/db-helper";
 import * as playerService from "../services/player-service";
 //import { getIdName } from "../services/player-service";
 import { Player } from "../interfaces/Player";
+import { NotFoundError } from "../interfaces/my-error";
 
 export class PlayerController
 {
@@ -45,7 +46,9 @@ export class PlayerController
     } 
     catch (e)
     {
-      next(e);
+      if (e instanceof NotFoundError) {
+        res.status(404).json({ message: e.message });
+      }
     } 
     finally 
     {
