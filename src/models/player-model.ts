@@ -17,6 +17,21 @@ const getIdName = async (dbConnection: PoolConnection): Promise<Player[]> => {
   return result;
 }
 
+const getDataById = async (id:number, dbConnection: PoolConnection): Promise<Player> => {
+  const[rows] = await dbConnection.query<RowDataPacket[]>(
+      "SELECT * FROM `players` WHERE id = ?;",id
+  );
+
+  const result: Player = {
+      id: rows[0].id,
+      name: rows[0].name,
+      hp: rows[0].hp,
+      mp: rows[0].mp,
+      money: rows[0].money
+  };
+  return result;
+}
+
 const createPlayer = async (
     data: Player,
     dbConnection: PoolConnection
@@ -29,4 +44,4 @@ const createPlayer = async (
     return rows.insertId;
   };
 
-export { getIdName, createPlayer };
+export { getIdName, createPlayer, getDataById };

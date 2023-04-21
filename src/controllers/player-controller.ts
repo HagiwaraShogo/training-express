@@ -29,6 +29,30 @@ export class PlayerController
     }
   }
 
+  async getDataById(
+    req: Request,
+    res: Response,
+    next: NextFunction
+  ): Promise<void> {
+    const PlayerId = parseInt(req.params.id);
+    const dbConnection = await dbPool.getConnection();
+    try
+    {
+      const result = await playerService.getDataById(PlayerId, dbConnection);
+
+      res.status(200);
+      res.json(result);
+    } 
+    catch (e)
+    {
+      next(e);
+    } 
+    finally 
+    {
+      dbConnection.release(); // connectionを返却
+    }
+  }
+
   async createPlayer(
     req: Request,
     res: Response,
