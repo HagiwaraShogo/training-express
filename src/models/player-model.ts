@@ -1,5 +1,5 @@
 import { PoolConnection } from "mysql2/promise";
-import { Player } from "../interfaces/Player";
+import { Player, PlayerKey } from "../interfaces/Player";
 import { RowDataPacket, OkPacket } from "mysql2";
 import { NotFoundError } from "../interfaces/my-error";
 
@@ -50,4 +50,33 @@ const createPlayer = async (
     return rows.insertId;
   };
 
-export { getIdName, createPlayer, getDataById };
+  const updatePlayer = async (
+    player: Player,
+    dbConnection: PoolConnection
+  ): Promise<Player> => {
+    const[rows] = await dbConnection.query<RowDataPacket[]>(
+      "SELECT * FROM `players` WHERE id = ?;",player.id
+    );
+    if(!rows[0]) throw new NotFoundError('user not found.');
+
+    let setSql = new Array();
+    let updateData = new Array();
+    (Object.keys(player) as PlayerKey[]).forEach((key)=>{
+      if(key == "id") return;
+      if(player[key]) 
+      {
+        setSql.push(`${key} = ?`);
+        updateData.push(player[key]);
+      }
+    });
+
+    updateData.push(player.id);
+
+    await dbConnection.query<OkPacket>(
+      "UPDATE `players` SET " + setSql.join(', ') + " WHERE `id` = ?", updateData
+    );
+
+    return player;
+  }
+
+export { getIdName, createPlayer, getDataById, updatePlayer };

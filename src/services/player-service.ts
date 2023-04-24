@@ -21,4 +21,12 @@ import { PoolConnection } from "mysql2/promise";
     return result;
   };
 
-  export { getIdName, createPlayer, getDataById };
+  const updatePlayer = async (
+    player: Player,
+    dbConnection: PoolConnection
+  ): Promise<Player> => {
+    const result: Player = await PlayerModel.updatePlayer(player, dbConnection);
+    return result;
+  }
+
+  export { getIdName, createPlayer, getDataById, updatePlayer };
