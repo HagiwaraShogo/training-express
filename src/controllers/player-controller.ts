@@ -118,7 +118,7 @@ export class PlayerController
       await transactionHelper(dbConnection, async () => {
         await playerService.updatePlayer(player, dbConnection);
       });
-      
+
       await dbConnection.commit();
       res.status(200).json({ player: player! });
     } catch (e) {
@@ -130,6 +130,10 @@ export class PlayerController
       else{
         next(e);
       }
+    }
+    finally 
+    {
+      dbConnection.release(); // connectionを返却
     }
   }
 

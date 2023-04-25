@@ -26,21 +26,7 @@ import { PoolConnection } from "mysql2/promise";
     dbConnection: PoolConnection
   ): Promise<void> => {
     await PlayerModel.getPlayer(player.id as number,dbConnection);
-
-    let setSql = new Array();
-    let updateData = new Array();
-    (Object.keys(player) as PlayerKey[]).forEach((key)=>{
-      if(key == "id") return;
-      if(player[key]) 
-      {
-        setSql.push(`${key} = ?`);
-        updateData.push(player[key]);
-      }
-    });
-
-    updateData.push(player.id);
-
-    await PlayerModel.updatePlayer(setSql,updateData,  dbConnection);
+    await PlayerModel.updatePlayer(player,  dbConnection);
   }
 
   export { getIdName, createPlayer, getDataById, updatePlayer };

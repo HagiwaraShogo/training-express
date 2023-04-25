@@ -51,10 +51,21 @@ const createPlayer = async (
   };
 
   const updatePlayer = async (
-    setSql:any,
-    updateData:any,
+    player:Player,
     dbConnection: PoolConnection
   ): Promise<void> => {
+    let setSql = new Array();
+    let updateData = new Array();
+    (Object.keys(player) as PlayerKey[]).forEach((key)=>{
+      if(key == "id") return;
+      if(player[key]) 
+      {
+        setSql.push(`${key} = ?`);
+        updateData.push(player[key]);
+      }
+    });
+    updateData.push(player.id);
+
     await dbConnection.query<OkPacket>(
       "UPDATE `players` SET " + setSql.join(', ') + " WHERE `id` = ?", updateData
     );
