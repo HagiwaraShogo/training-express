@@ -131,10 +131,6 @@ export class PlayerController
         next(e);
       }
     }
-    finally 
-    {
-      dbConnection.release(); // connectionを返却
-    }
   }
 
   async destroyPlayer(
@@ -162,10 +158,6 @@ export class PlayerController
       else{
         next(e);
       }
-    }
-    finally 
-    {
-      dbConnection.release(); // connectionを返却
     }
   }
 
