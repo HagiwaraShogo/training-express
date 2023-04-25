@@ -114,13 +114,13 @@ export class PlayerController
     const dbConnection = await dbPool.getConnection();
 
     try {
-      let result: Player;
       // トランザクション例2
       await transactionHelper(dbConnection, async () => {
-        result = await playerService.updatePlayer(player, dbConnection);
+        await playerService.updatePlayer(player, dbConnection);
       });
+      
       await dbConnection.commit();
-      res.status(200).json({ player: result! });
+      res.status(200).json({ player: player! });
     } catch (e) {
       await dbConnection.rollback();
 

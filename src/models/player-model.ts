@@ -51,32 +51,25 @@ const createPlayer = async (
   };
 
   const updatePlayer = async (
-    player: Player,
+    setSql:any,
+    updateData:any,
     dbConnection: PoolConnection
-  ): Promise<Player> => {
-    const[rows] = await dbConnection.query<RowDataPacket[]>(
-      "SELECT * FROM `players` WHERE id = ?;",player.id
-    );
-    if(!rows[0]) throw new NotFoundError('user not found.');
-
-    let setSql = new Array();
-    let updateData = new Array();
-    (Object.keys(player) as PlayerKey[]).forEach((key)=>{
-      if(key == "id") return;
-      if(player[key]) 
-      {
-        setSql.push(`${key} = ?`);
-        updateData.push(player[key]);
-      }
-    });
-
-    updateData.push(player.id);
-
+  ): Promise<void> => {
     await dbConnection.query<OkPacket>(
       "UPDATE `players` SET " + setSql.join(', ') + " WHERE `id` = ?", updateData
     );
-
-    return player;
   }
 
-export { getIdName, createPlayer, getDataById, updatePlayer };
+  async function getPlayer(id:number, dbConnection: PoolConnection)
+  {
+    const[rows] = await dbConnection.query<RowDataPacket[]>(
+      "SELECT * FROM `players` WHERE id = ?;",id
+    );
+
+    if(!rows[0])
+    {
+      throw new NotFoundError('user not found.');
+    } 
+  }
+
+export { getIdName, createPlayer, getDataById, updatePlayer, getPlayer };
