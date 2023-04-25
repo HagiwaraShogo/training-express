@@ -119,11 +119,8 @@ export class PlayerController
         await playerService.updatePlayer(player, dbConnection);
       });
 
-      await dbConnection.commit();
       res.status(200).json({ player: player! });
     } catch (e) {
-      await dbConnection.rollback();
-
       if (e instanceof NotFoundError) {
         res.status(404).json({ message: e.message });
       }
@@ -147,10 +144,8 @@ export class PlayerController
         await playerService.destroyPlayer(PlayerId, dbConnection);
       });
 
-      await dbConnection.commit();
       res.status(200).json({ player: "playerId:" + PlayerId! + " delete" });
     } catch (e) {
-      await dbConnection.rollback();
 
       if (e instanceof NotFoundError) {
         res.status(404).json({ message: e.message });
