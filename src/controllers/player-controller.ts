@@ -137,6 +137,38 @@ export class PlayerController
     }
   }
 
+  async destroyPlayer(
+    req: Request,
+    res: Response,
+    next: NextFunction
+  ): Promise<void> {
+    const PlayerId = parseInt(req.params.id);
+    const dbConnection = await dbPool.getConnection();
+
+    try {
+      // トランザクション例2
+      await transactionHelper(dbConnection, async () => {
+        await playerService.destroyPlayer(PlayerId, dbConnection);
+      });
+
+      await dbConnection.commit();
+      res.status(200).json({ player: "playerId:" + PlayerId! + " delete" });
+    } catch (e) {
+      await dbConnection.rollback();
+
+      if (e instanceof NotFoundError) {
+        res.status(404).json({ message: e.message });
+      }
+      else{
+        next(e);
+      }
+    }
+    finally 
+    {
+      dbConnection.release(); // connectionを返却
+    }
+  }
+
   errorResponse(req: Request, res: Response, next: NextFunction) {
     next(new Error("エラー発生"));
   }

@@ -29,4 +29,12 @@ import { PoolConnection } from "mysql2/promise";
     await PlayerModel.updatePlayer(player,  dbConnection);
   }
 
-  export { getIdName, createPlayer, getDataById, updatePlayer };
+  const destroyPlayer = async (
+    id: number,
+    dbConnection: PoolConnection
+  ): Promise<void> => {
+    await PlayerModel.getPlayer(id,dbConnection);
+    await PlayerModel.destroyPlayer(id,dbConnection);
+  }
+
+  export { getIdName, createPlayer, getDataById, updatePlayer, destroyPlayer };
