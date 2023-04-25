@@ -9,3 +9,4 @@ const playerController = new PlayerController();
 router.get("/", playerController.getIdName);
 router.get("/:id", playerController.getDataById);
 router.post("/", playerController.createPlayer);
+router.put("/:id", playerController.updatePlayer);

@@ -1,5 +1,5 @@
 import * as PlayerModel from "../models/player-model";
-import { Player } from "../interfaces/Player";
+import { Player, PlayerKey } from "../interfaces/Player";
 import { PoolConnection } from "mysql2/promise";
 
   const getIdName = async (dbConnection: PoolConnection): Promise<Player[]> => {
@@ -21,4 +21,12 @@ import { PoolConnection } from "mysql2/promise";
     return result;
   };
 
-  export { getIdName, createPlayer, getDataById };
+  const updatePlayer = async (
+    player: Player,
+    dbConnection: PoolConnection
+  ): Promise<void> => {
+    await PlayerModel.getPlayer(player.id as number,dbConnection);
+    await PlayerModel.updatePlayer(player,  dbConnection);
+  }
+
+  export { getIdName, createPlayer, getDataById, updatePlayer };

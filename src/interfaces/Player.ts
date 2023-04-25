@@ -5,5 +5,7 @@ interface Player {
     mp?: number;
     money?: number;
   }
+
+  type PlayerKey = keyof Player;
   
-  export { Player };
+  export { Player, PlayerKey };
