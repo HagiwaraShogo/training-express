@@ -15,7 +15,7 @@ const addItem = async(
     );
 }
 
-const getitemCount = async(
+const getItemCount = async(
     data: PlayerItem,
     dbConnection: PoolConnection
 ): Promise<number> => {
@@ -26,7 +26,7 @@ const getitemCount = async(
     return rows[0].count;
 }
 
-async function getItem(id:number, dbConnection: PoolConnection)
+async function itemExistenceCheck(id:number, dbConnection: PoolConnection)
 {
     const[rows] = await dbConnection.query<RowDataPacket[]>(
       "SELECT * FROM `items` WHERE id = ?;",id
@@ -38,4 +38,4 @@ async function getItem(id:number, dbConnection: PoolConnection)
     } 
 }
 
-export { getItem, addItem, getitemCount };
+export { itemExistenceCheck, addItem, getItemCount };
