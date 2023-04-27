@@ -71,7 +71,7 @@ const createPlayer = async (
     );
   }
 
-  async function getPlayer(id:number, dbConnection: PoolConnection)
+  async function playerExistenceCheck(id:number, dbConnection: PoolConnection)
   {
     const[rows] = await dbConnection.query<RowDataPacket[]>(
       "SELECT * FROM `players` WHERE id = ?;",id

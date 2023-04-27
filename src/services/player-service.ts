@@ -25,7 +25,7 @@ import { PoolConnection } from "mysql2/promise";
     player: Player,
     dbConnection: PoolConnection
   ): Promise<void> => {
-    await PlayerModel.getPlayer(player.id as number,dbConnection);
+    await PlayerModel.playerExistenceCheck(player.id as number,dbConnection);
     await PlayerModel.updatePlayer(player,  dbConnection);
   }
 
