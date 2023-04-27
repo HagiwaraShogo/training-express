@@ -83,4 +83,13 @@ const createPlayer = async (
     } 
   }
 
-export { getIdName, createPlayer, getDataById, updatePlayer, playerExistenceCheck };
+  const destroyPlayer= async (
+    id:number,
+    dbConnection: PoolConnection
+  ): Promise<void> => {
+    await dbConnection.query(
+      "DELETE FROM `players` WHERE id = ?",id
+    );
+  }
+
+export { getIdName, createPlayer, getDataById, updatePlayer, getPlayer, destroyPlayer };

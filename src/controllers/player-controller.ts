@@ -119,11 +119,8 @@ export class PlayerController
         await playerService.updatePlayer(player, dbConnection);
       });
 
-      await dbConnection.commit();
       res.status(200).json({ player: player! });
     } catch (e) {
-      await dbConnection.rollback();
-
       if (e instanceof NotFoundError) {
         res.status(404).json({ message: e.message });
       }
@@ -131,9 +128,31 @@ export class PlayerController
         next(e);
       }
     }
-    finally 
-    {
-      dbConnection.release(); // connectionを返却
+  }
+
+  async destroyPlayer(
+    req: Request,
+    res: Response,
+    next: NextFunction
+  ): Promise<void> {
+    const PlayerId = parseInt(req.params.id);
+    const dbConnection = await dbPool.getConnection();
+
+    try {
+      // トランザクション例2
+      await transactionHelper(dbConnection, async () => {
+        await playerService.destroyPlayer(PlayerId, dbConnection);
+      });
+
+      res.status(200).json({ player: "playerId:" + PlayerId! + " delete" });
+    } catch (e) {
+
+      if (e instanceof NotFoundError) {
+        res.status(404).json({ message: e.message });
+      }
+      else{
+        next(e);
+      }
     }
   }
 
