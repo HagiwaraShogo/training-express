@@ -33,7 +33,7 @@ import { PoolConnection } from "mysql2/promise";
     id: number,
     dbConnection: PoolConnection
   ): Promise<void> => {
-    await PlayerModel.getPlayer(id,dbConnection);
+    await PlayerModel.playerExistenceCheck(id,dbConnection);
     await PlayerModel.destroyPlayer(id,dbConnection);
   }
 

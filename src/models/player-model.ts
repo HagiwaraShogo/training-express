@@ -92,4 +92,4 @@ const createPlayer = async (
     );
   }
 
-export { getIdName, createPlayer, getDataById, updatePlayer, getPlayer, destroyPlayer };
+export { getIdName, createPlayer, getDataById, updatePlayer, playerExistenceCheck, destroyPlayer };

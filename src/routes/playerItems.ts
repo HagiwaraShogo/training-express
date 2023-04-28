@@ -5,3 +5,4 @@ export const router = express.Router();
 const playerItemController = new PlayerItemController();
 
 router.post("/:id/addItem", playerItemController.addItem);
+router.post("/:id/useItem", playerItemController.useItem);
