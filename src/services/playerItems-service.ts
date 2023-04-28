@@ -25,7 +25,7 @@ const addItem = async (
 const useItem = async (
     data: PlayerItem,
     dbConnection: PoolConnection
-): Promise<void> => {
+): Promise<object> => {
     if(data.playerId == null) throw new MyError.NotFoundError("playerId is undefined.");
     if(data.itemId == null) throw new MyError.NotFoundError("itemId is undefined.");
 
@@ -45,7 +45,7 @@ const useItem = async (
     const count: number = data.count as number;
     const nowCount: number = playerItemData.count;
     const beforeHeal: number = playerStatus[itemNameById[data.itemId-1]];
-    
+
     if(nowCount < count)throw new MyError.NotEnoughError("item is not enough");
     if(beforeHeal == maxValue) throw new MyError.LimitExceededError("max value");
 
@@ -73,6 +73,16 @@ const useItem = async (
     }
 
     await PlayerModel.updatePlayer(playerData, dbConnection);
+
+    return {
+        'itemId': data.itemId,
+        'count': nowCount - count,
+        'player': {
+            'id': playerData.id,
+            'hp': playerData.hp,
+            'mp': playerData.mp
+        }
+    }
 }
 
 export { addItem, useItem };

@@ -48,12 +48,13 @@ export class PlayerItemController
         }
 
         const dbConnection = await dbPool.getConnection();
+        let result = {};
 
         try{
             await transactionHelper(dbConnection, async () => {
-                await PlayerItemService.useItem(playerItemData, dbConnection);
+                result = await PlayerItemService.useItem(playerItemData, dbConnection);
             });
-            res.status(200).json({id: playerItemData.itemId, count: playerItemData.count});
+            res.status(200).json(result);
 
         } catch(e){
             if(e instanceof  MyError.NotFoundError) {
