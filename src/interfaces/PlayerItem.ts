@@ -1,7 +1,7 @@
 interface PlayerItem {
     playerId?: number;
     itemId: number;
-    count?: number;
+    count: number;
   }
 
   type PlayerItemKey = keyof PlayerItem;

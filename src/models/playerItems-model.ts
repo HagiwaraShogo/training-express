@@ -26,16 +26,35 @@ const getItemCount = async(
     return rows[0].count;
 }
 
-async function itemExistenceCheck(id:number, dbConnection: PoolConnection)
-{
+const getDataById = async (
+    data: PlayerItem, 
+    dbConnection: PoolConnection
+    ): Promise<PlayerItem> => {
     const[rows] = await dbConnection.query<RowDataPacket[]>(
-      "SELECT * FROM `items` WHERE id = ?;",id
+        "SELECT * FROM `player_items` WHERE `player_id` = ? AND `item_id` = ?",[data.playerId, data.itemId]
     );
-
+  
     if(!rows[0])
     {
-      throw new NotFoundError('item is not found.');
+      throw new NotFoundError('user not found.');
     } 
-}
+  
+    const result: PlayerItem = {
+        playerId: rows[0].playerId,
+        itemId: rows[0].itemId,
+        count: rows[0].count,
+    };
+    return result;
+  }
 
-export { itemExistenceCheck, addItem, getItemCount };
+  const useItemUpdate = async (
+    data: PlayerItem,
+    dbConnection: PoolConnection
+  ):Promise<void>=> {
+    const[rows] = await dbConnection.query<RowDataPacket[]>(
+        "UPDATE `player_items` SET `count` = `count` - ? WHERE `player_id` = ? && `item_id` = ?",
+        [data.count, data.playerId, data.itemId]
+    );
+  }
+
+export { addItem, getItemCount, getDataById, useItemUpdate };
