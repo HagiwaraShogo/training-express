@@ -2,6 +2,7 @@ import * as PlayerItemModel from "../models/playerItems-model";
 import { Player } from "../interfaces/Player";
 import { Item } from "../interfaces/Item";
 import { PlayerItem, PlayerItemKey } from "../interfaces/PlayerItem";
+import { Gahca } from "../interfaces/Gacha";
 import * as PlayerModel from "../models/player-model";
 import * as ItemModel from "../models/item-model"
 import { PoolConnection } from "mysql2/promise";
@@ -85,4 +86,94 @@ const useItem = async (
     }
 }
 
-export { addItem, useItem };
+const useGacha = async (
+    gachaData:Gahca,
+    dbConnection: PoolConnection
+):Promise<object> =>{
+    const gachaPrice = 10;
+
+    if(gachaData.playerId == null) throw new MyError.NotFoundError("playerId is undefined.");
+    const playerData: Player = await PlayerModel.getDataById(gachaData.playerId, dbConnection);
+    const itemData: Item[] = await ItemModel.getAllData(dbConnection);
+
+    if(playerData.money as number < gachaData.count * gachaPrice)
+    {
+        throw new MyError.NotEnoughError("money is not enough.");
+    }
+
+    const updatingData: Player =  {
+        id: gachaData.playerId,
+        money: playerData.money as number - gachaData.count * gachaPrice
+    };
+    await PlayerModel.updatePlayer(updatingData,dbConnection);
+
+    const percentById:any = {};
+    itemData.forEach((item:any)=>{
+        percentById[item.id] = item.percent as number;
+    });
+
+    const result:any = {};
+
+    for(let i = 0; i < gachaData.count; i++){
+        const random = Math.floor(Math.random() * (100 - 1) + 1);
+        let totalPercent = 0;
+        
+        for(let j = 1; j <= Object.keys(percentById).length; j++)
+        {
+            totalPercent += percentById[j];
+            if(random <= totalPercent)
+            {
+                if(j in result)
+                {
+                    result[j] += 1;
+                }
+                else
+                {
+                    result[j] = 1;
+                }
+                break;
+            }
+        }
+    }
+
+    // レスポンス用
+    let resultResponse = new Array;
+    for(let i = 1; i <= Object.keys(percentById).length; i++)
+    {
+        const item:PlayerItem = {
+            playerId: gachaData.playerId,
+            itemId: i,
+            count: result[i]
+        }
+        await PlayerItemModel.addItem(item, dbConnection);
+        
+        if(i in result)
+        {
+            const data = {
+                'itemId': i,
+                'count': result[i]
+            }
+            resultResponse.push(data);
+        }
+    }
+
+    let itemResponse = new Array;
+    const playerItemData: PlayerItem[] = await PlayerItemModel.getDataByPlayerId(gachaData.playerId, dbConnection);
+    playerItemData.forEach((playerItem:any) => {
+        const data = {
+            'itemId': playerItem.itemId,
+            'count': playerItem.count
+        }
+        itemResponse.push(data);
+    })
+
+    return {
+        'results':resultResponse,
+        'player' : {
+            'monay' : updatingData.money,
+            'items' : itemResponse
+          }
+    }
+}
+
+export { addItem, useItem, useGacha };

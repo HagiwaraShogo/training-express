@@ -4,6 +4,7 @@ import { PlayerItem } from "../interfaces/PlayerItem";
 import * as PlayerItemService from "../services/playerItems-service"
 import  * as MyError from "../interfaces/my-error";
 import { Player } from "../interfaces/Player";
+import { Gahca } from "../interfaces/Gacha"; 
 
 export class PlayerItemController
 {
@@ -64,6 +65,34 @@ export class PlayerItemController
                 res.status(400).json({message: e.message});
             }
             else if(e instanceof MyError.LimitExceededError) {
+                res.status(400).json({message: e.message});
+            }
+            next(e);
+        }
+    }
+
+    async useGacha(
+        req: Request,
+        res: Response,
+        next: NextFunction
+    ): Promise<void> {
+        let GachaData: Gahca = {
+            playerId: parseInt(req.params.id),
+            count: req.body.count
+        }
+        const dbConnection = await dbPool.getConnection();
+
+        try{
+            let result = {};
+            await transactionHelper(dbConnection, async () => {
+                result = await PlayerItemService.useGacha(GachaData, dbConnection);
+            });
+            res.status(200).json(result);
+        } catch (e) {
+            if(e instanceof  MyError.NotFoundError) {
+                res.status(400).json({message: e.message});
+            }
+            else if(e instanceof MyError.NotEnoughError) {
                 res.status(400).json({message: e.message});
             }
             next(e);
