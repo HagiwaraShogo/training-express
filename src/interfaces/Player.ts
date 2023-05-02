@@ -3,7 +3,7 @@ interface Player {
     name?: string;
     hp?: number;
     mp?: number;
-    money?: number;
+    money: number;
   }
 
   type PlayerKey = keyof Player;

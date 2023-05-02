@@ -29,7 +29,7 @@ const getItemCount = async(
 const getDataById = async (
     data: PlayerItem, 
     dbConnection: PoolConnection
-    ): Promise<PlayerItem> => {
+): Promise<PlayerItem> => {
     const[rows] = await dbConnection.query<RowDataPacket[]>(
         "SELECT * FROM `player_items` WHERE `player_id` = ? AND `item_id` = ?",[data.playerId, data.itemId]
     );
@@ -45,16 +45,62 @@ const getDataById = async (
         count: rows[0].count,
     };
     return result;
-  }
+}
 
-  const useItemUpdate = async (
+const getDataByPlayerId = async (
+    id: number,
+    dbConnection: PoolConnection
+): Promise<PlayerItem[]> => {
+    const[rows] = await dbConnection.query<RowDataPacket[]>(
+        "SELECT * FROM `player_items` WHERE `player_id` = ?",
+        id
+    );
+
+    if(!rows[0])
+    {
+      throw new NotFoundError('PlayerItemData is not found.');
+    } 
+
+    const playerItemData = rows.map((row) => {
+        return {
+            playerId: row.player_id,
+            itemId: row.item_id,
+            count: row.count
+        }
+    })
+    return playerItemData;
+}
+
+const useItemUpdate = async (
     data: PlayerItem,
     dbConnection: PoolConnection
-  ):Promise<void>=> {
+):Promise<void>=> {
     const[rows] = await dbConnection.query<RowDataPacket[]>(
         "UPDATE `player_items` SET `count` = `count` - ? WHERE `player_id` = ? && `item_id` = ?",
         [data.count, data.playerId, data.itemId]
     );
-  }
+}
 
-export { addItem, getItemCount, getDataById, useItemUpdate };
+const useGacha = async (
+    id: number,
+    dbConnection: PoolConnection
+): Promise<PlayerItem[]> => {
+    const [rows] = await dbConnection.query<RowDataPacket[]> (
+        "SELECT * FROM `player_items` WHERE `player_id` = ?",
+        [id]
+    )
+
+    if(!rows[0]) throw new NotFoundError('user not found.');
+
+    const playerItemData = rows.map((row) => {
+        return {
+            playerId: row.player_id,
+            itemId:   row.item_id,
+            count:    row.count
+        }
+    });
+
+    return playerItemData;
+}
+
+export { addItem, getItemCount, getDataById, getDataByPlayerId, useItemUpdate, useGacha };

@@ -6,3 +6,4 @@ const playerItemController = new PlayerItemController();
 
 router.post("/:id/addItem", playerItemController.addItem);
 router.post("/:id/useItem", playerItemController.useItem);
+router.post("/:id/useGacha", playerItemController.useGacha);
