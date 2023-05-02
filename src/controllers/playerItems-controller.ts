@@ -1,9 +1,8 @@
 import { Response, Request, NextFunction } from "express";
 import { dbPool, transactionHelper } from "../helpers/db-helper";
-import { PlayerItem } from "../interfaces/PlayerItem";
+import { PlayerItem, useItemResponse, useGachaResponse } from "../interfaces/PlayerItem";
 import * as PlayerItemService from "../services/playerItems-service"
 import  * as MyError from "../interfaces/my-error";
-import { Player } from "../interfaces/Player";
 import { Gacha } from "../interfaces/Gacha"; 
 
 export class PlayerItemController
@@ -52,7 +51,7 @@ export class PlayerItemController
 
         try{
             await transactionHelper(dbConnection, async () => {
-                const result = await PlayerItemService.useItem(playerItemData, dbConnection);
+                const result: useItemResponse = await PlayerItemService.useItem(playerItemData, dbConnection);
                 res.status(200).json(result);
             });
         } catch(e){
@@ -85,7 +84,7 @@ export class PlayerItemController
 
         try{
             await transactionHelper(dbConnection, async () => {
-                const result = await PlayerItemService.useGacha(GachaData, dbConnection);
+                const result: useGachaResponse = await PlayerItemService.useGacha(GachaData, dbConnection);
                 res.status(200).json(result);
             });
         } catch (e) {

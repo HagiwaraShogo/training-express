@@ -1,7 +1,7 @@
 import * as PlayerItemModel from "../models/playerItems-model";
 import { Player } from "../interfaces/Player";
 import { Item } from "../interfaces/Item";
-import { PlayerItem, PlayerItemKey } from "../interfaces/PlayerItem";
+import { PlayerItem, useItemResponse, useGachaResponse } from "../interfaces/PlayerItem";
 import { Gacha } from "../interfaces/Gacha";
 import * as PlayerModel from "../models/player-model";
 import * as ItemModel from "../models/item-model"
@@ -26,7 +26,7 @@ const addItem = async (
 const useItem = async (
     data: PlayerItem,
     dbConnection: PoolConnection
-): Promise<object> => {
+): Promise<useItemResponse> => {
     if(data.playerId == null) throw new MyError.NotFoundError("playerId is undefined.");
     if(data.itemId == null) throw new MyError.NotFoundError("itemId is undefined.");
 
@@ -76,12 +76,12 @@ const useItem = async (
     await PlayerModel.updatePlayer(playerData, dbConnection);
 
     return {
-        itemI: data.itemId,
+        itemId: data.itemId,
         count: nowCount - count,
         player: {
-            id: playerData.id,
-            hp: playerData.hp,
-            mp: playerData.mp
+            id: playerData.id as number,
+            hp: playerData.hp as number,
+            mp: playerData.mp as number
         }
     }
 }
@@ -89,7 +89,7 @@ const useItem = async (
 const useGacha = async (
     gachaData:Gacha,
     dbConnection: PoolConnection
-):Promise<any> =>{
+):Promise<useGachaResponse> =>{
     const gachaPrice = 10;
 
     const playerData: Player = await PlayerModel.getDataById(gachaData.playerId, dbConnection);
