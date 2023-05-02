@@ -1,6 +1,6 @@
-interface Gahca {
+interface Gacha {
     playerId: number,
     count:    number
 }
   
-export { Gahca };
+export { Gacha };

@@ -3,7 +3,7 @@ import { Player, PlayerKey } from "../interfaces/Player";
 import { RowDataPacket, OkPacket } from "mysql2";
 import { NotFoundError } from "../interfaces/my-error";
 
-const getIdName = async (dbConnection: PoolConnection): Promise<Player[]> => {
+const getplayers = async (dbConnection: PoolConnection): Promise<Player[]> => {
     const [rows] = await dbConnection.query<RowDataPacket[]>(
         "SELECT * FROM `players`;"
       );
@@ -11,7 +11,10 @@ const getIdName = async (dbConnection: PoolConnection): Promise<Player[]> => {
     const result: Player[] = rows.map((row) => {
     return {
       id: row.id,
-      name: row.name
+      name: row.name,
+      hp: row.hp,
+      mp: row.mp,
+      money: row.money
     };
   });
 
@@ -92,4 +95,4 @@ const createPlayer = async (
     );
   }
 
-export { getIdName, createPlayer, getDataById, updatePlayer, playerExistenceCheck, destroyPlayer };
+export { getplayers, createPlayer, getDataById, updatePlayer, playerExistenceCheck, destroyPlayer };

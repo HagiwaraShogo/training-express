@@ -7,7 +7,7 @@ import { NotFoundError } from "../interfaces/my-error";
 
 export class PlayerController
 {
-  async getIdName(
+  async getplayers(
     req: Request,
     res: Response,
     next: NextFunction
@@ -15,7 +15,7 @@ export class PlayerController
     const dbConnection = await dbPool.getConnection();
     try
     {
-      const result = await playerService.getIdName(dbConnection);
+      const result = await playerService.getplayers(dbConnection);
 
       res.status(200);
       res.json(result);

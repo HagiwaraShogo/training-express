@@ -2,7 +2,7 @@ import * as PlayerItemModel from "../models/playerItems-model";
 import { Player } from "../interfaces/Player";
 import { Item } from "../interfaces/Item";
 import { PlayerItem, PlayerItemKey } from "../interfaces/PlayerItem";
-import { Gahca } from "../interfaces/Gacha";
+import { Gacha } from "../interfaces/Gacha";
 import * as PlayerModel from "../models/player-model";
 import * as ItemModel from "../models/item-model"
 import { PoolConnection } from "mysql2/promise";
@@ -13,7 +13,7 @@ const addItem = async (
     dbConnection: PoolConnection
 ): Promise<number> => {
     if(data.playerId == null) throw new MyError.NotFoundError("playerId is undefined.");
-    await PlayerModel.playerExistenceCheck(data.playerId as number, dbConnection);
+    await PlayerModel.playerExistenceCheck(data.playerId, dbConnection);
 
     if(data.itemId == null) throw new MyError.NotFoundError("itemId is undefined.");
     await ItemModel.itemExistenceCheck(data.itemId as number, dbConnection);
@@ -76,34 +76,33 @@ const useItem = async (
     await PlayerModel.updatePlayer(playerData, dbConnection);
 
     return {
-        'itemId': data.itemId,
-        'count': nowCount - count,
-        'player': {
-            'id': playerData.id,
-            'hp': playerData.hp,
-            'mp': playerData.mp
+        itemI: data.itemId,
+        count: nowCount - count,
+        player: {
+            id: playerData.id,
+            hp: playerData.hp,
+            mp: playerData.mp
         }
     }
 }
 
 const useGacha = async (
-    gachaData:Gahca,
+    gachaData:Gacha,
     dbConnection: PoolConnection
-):Promise<object> =>{
+):Promise<any> =>{
     const gachaPrice = 10;
 
-    if(gachaData.playerId == null) throw new MyError.NotFoundError("playerId is undefined.");
     const playerData: Player = await PlayerModel.getDataById(gachaData.playerId, dbConnection);
     const itemData: Item[] = await ItemModel.getAllData(dbConnection);
 
-    if(playerData.money as number < gachaData.count * gachaPrice)
+    if(playerData.money < gachaData.count * gachaPrice)
     {
         throw new MyError.NotEnoughError("money is not enough.");
     }
 
     const updatingData: Player =  {
         id: gachaData.playerId,
-        money: playerData.money as number - gachaData.count * gachaPrice
+        money: playerData.money - gachaData.count * gachaPrice
     };
     await PlayerModel.updatePlayer(updatingData,dbConnection);
 
@@ -137,7 +136,7 @@ const useGacha = async (
     }
 
     // レスポンス用
-    let resultResponse = new Array;
+    let resultResponse: any = [];
     for(let i = 1; i <= Object.keys(percentById).length; i++)
     {
         const item:PlayerItem = {
@@ -157,7 +156,7 @@ const useGacha = async (
         }
     }
 
-    let itemResponse = new Array;
+    let itemResponse: any = [];
     const playerItemData: PlayerItem[] = await PlayerItemModel.getDataByPlayerId(gachaData.playerId, dbConnection);
     playerItemData.forEach((playerItem:any) => {
         const data = {
@@ -168,10 +167,10 @@ const useGacha = async (
     })
 
     return {
-        'results':resultResponse,
-        'player' : {
-            'monay' : updatingData.money,
-            'items' : itemResponse
+        results: resultResponse,
+        player : {
+            monay: updatingData.money,
+            items: itemResponse
           }
     }
 }
