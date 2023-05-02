@@ -23,7 +23,7 @@ export class PlayerItemController
 
        try{
         await transactionHelper(dbConnection, async () => {
-            const count: number = await PlayerItemService.addItem(playerItemData, dbConnection);
+            const count = await PlayerItemService.addItem(playerItemData, dbConnection);
             res.status(200).json({id: playerItemData.itemId, count: count});
         });
        } catch(e) {
@@ -51,7 +51,7 @@ export class PlayerItemController
 
         try{
             await transactionHelper(dbConnection, async () => {
-                const result: useItemResponse = await PlayerItemService.useItem(playerItemData, dbConnection);
+                const result = await PlayerItemService.useItem(playerItemData, dbConnection);
                 res.status(200).json(result);
             });
         } catch(e){
@@ -84,7 +84,7 @@ export class PlayerItemController
 
         try{
             await transactionHelper(dbConnection, async () => {
-                const result: useGachaResponse = await PlayerItemService.useGacha(GachaData, dbConnection);
+                const result = await PlayerItemService.useGacha(GachaData, dbConnection);
                 res.status(200).json(result);
             });
         } catch (e) {
