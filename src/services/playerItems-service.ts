@@ -1,7 +1,7 @@
 import * as PlayerItemModel from "../models/playerItems-model";
 import { Player } from "../interfaces/Player";
 import { Item } from "../interfaces/Item";
-import { PlayerItem, useItemResponse, useGachaResponse } from "../interfaces/PlayerItem";
+import { PlayerItem, useItemResponse, useGachaResponse, playerItemAllData } from "../interfaces/PlayerItem";
 import { Gacha } from "../interfaces/Gacha";
 import * as PlayerModel from "../models/player-model";
 import * as ItemModel from "../models/item-model"
@@ -34,7 +34,7 @@ const useItem = async (
     const itemData: Item = await ItemModel.getDataById(data.itemId, dbConnection);
     const playerItemData: PlayerItem = await PlayerItemModel.getDataById(data, dbConnection);
 
-    const maxValue: number = 200;
+    const maxValue: number = 2000;
     const itemNameById = ["hp","mp"]
 
     const playerStatus:any = {
@@ -175,4 +175,12 @@ const useGacha = async (
     }
 }
 
-export { addItem, useItem, useGacha };
+const getPlayerItemAllData = async(
+    playerId: number,
+    dbConnection: PoolConnection
+): Promise<playerItemAllData[]> => {
+    const result = await PlayerItemModel.getPlayerItemAllData(playerId, dbConnection);
+    return result
+}
+
+export { addItem, useItem, useGacha, getPlayerItemAllData };

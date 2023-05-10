@@ -22,6 +22,15 @@ interface useGachaResponse{
   }
 }
 
+interface playerItemAllData {
+  itemId?: number,
+  name?: string,
+  heal?: number,
+  price?: number,
+  percent?: number,
+  count?: number
+}
+
   type PlayerItemKey = keyof PlayerItem;
   
-  export { PlayerItem, PlayerItemKey, useItemResponse, useGachaResponse };
+  export { PlayerItem, PlayerItemKey, useItemResponse, useGachaResponse, playerItemAllData };
