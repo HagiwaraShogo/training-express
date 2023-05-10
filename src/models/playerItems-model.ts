@@ -1,6 +1,6 @@
 import { Response, Request, NextFunction } from "express";
 import { PoolConnection } from "mysql2/promise";
-import { PlayerItem, PlayerItemKey } from "../interfaces/PlayerItem";
+import { PlayerItem, playerItemAllData } from "../interfaces/PlayerItem";
 import { RowDataPacket, OkPacket } from "mysql2";
 import { NotFoundError } from "../interfaces/my-error";
 import { access } from "fs";
@@ -103,4 +103,27 @@ const useGacha = async (
     return playerItemData;
 }
 
-export { addItem, getItemCount, getDataById, getDataByPlayerId, useItemUpdate, useGacha };
+const getPlayerItemAllData = async (
+    playerId: number,
+    dbConnection: PoolConnection
+): Promise<playerItemAllData[]> => {
+    const [rows] = await dbConnection.query<RowDataPacket[]> (
+        "SELECT `item_id`, `name`, `heal`, `price`,`count` FROM player_items, items WHERE player_items.item_id = items.id AND player_id = ?",
+        [playerId]
+    )
+
+    if(!rows[0]) throw new NotFoundError('user not found.');
+
+    const resultData =  rows.map((row) => {
+        return {
+            itemId: row.item_id,
+            name: row.name,
+            heal: row.heal,
+            price: row.price,
+            count: row.count
+        }
+    })
+    return resultData
+}
+
+export { addItem, getItemCount, getDataById, getDataByPlayerId, useItemUpdate, useGacha, getPlayerItemAllData };

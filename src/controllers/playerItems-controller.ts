@@ -1,6 +1,6 @@
 import { Response, Request, NextFunction } from "express";
 import { dbPool, transactionHelper } from "../helpers/db-helper";
-import { PlayerItem, useItemResponse, useGachaResponse } from "../interfaces/PlayerItem";
+import { PlayerItem } from "../interfaces/PlayerItem";
 import * as PlayerItemService from "../services/playerItems-service"
 import  * as MyError from "../interfaces/my-error";
 import { Gacha } from "../interfaces/Gacha"; 
@@ -94,6 +94,25 @@ export class PlayerItemController
             else if(e instanceof MyError.NotEnoughError) {
                 res.status(400).json({message: e.message});
             }
+            next(e);
+        }
+    }
+
+    async getPlayerItemAllData(
+        req: Request,
+        res: Response,
+        next: NextFunction
+    ): Promise<void> {
+        if(parseInt(req.params.id) == null) res.status(400).json("playerId is not Found.");
+        const playerId = parseInt(req.params.id);
+
+        const dbConnection = await dbPool.getConnection();
+        try{
+            await transactionHelper(dbConnection, async () => {
+                const result = await PlayerItemService.getPlayerItemAllData(playerId, dbConnection);
+                res.status(200).json(result);
+            });
+        } catch(e){
             next(e);
         }
     }
