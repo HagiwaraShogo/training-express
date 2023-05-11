@@ -89,7 +89,7 @@ const useItem = async (
 const useGacha = async (
     gachaData:Gacha,
     dbConnection: PoolConnection
-):Promise<useGachaResponse> =>{
+):Promise<useGachaResponse[]> =>{
     const gachaPrice = 10;
 
     const playerData: Player = await PlayerModel.getDataById(gachaData.playerId, dbConnection);
@@ -136,43 +136,31 @@ const useGacha = async (
     }
 
     // レスポンス用
-    let resultResponse: any = [];
-    for(let i = 1; i <= Object.keys(percentById).length; i++)
-    {
+    let resultResponse: useGachaResponse[] = [];
+    const playerItemData: PlayerItem[] = await PlayerItemModel.getDataByPlayerId(gachaData.playerId, dbConnection);
+
+    for(const key of Object.keys(result)) {
+        const intKey = parseInt(key);
+
+        // ガチャ結果を追加
         const item:PlayerItem = {
             playerId: gachaData.playerId,
-            itemId: i,
-            count: result[i]
+            itemId: intKey,
+            count: result[key]
         }
         await PlayerItemModel.addItem(item, dbConnection);
-        
-        if(i in result)
-        {
-            const data = {
-                'itemId': i,
-                'count': result[i]
-            }
-            resultResponse.push(data);
+
+        // レスポンスの設定
+        const data: useGachaResponse = {
+            itemId: intKey,
+            name: itemData[intKey - 1].name,
+            count: result[key],
+            totalCount: playerItemData[intKey - 1].count
         }
+        resultResponse.push(data);
     }
 
-    let itemResponse: any = [];
-    const playerItemData: PlayerItem[] = await PlayerItemModel.getDataByPlayerId(gachaData.playerId, dbConnection);
-    playerItemData.forEach((playerItem:any) => {
-        const data = {
-            'itemId': playerItem.itemId,
-            'count': playerItem.count
-        }
-        itemResponse.push(data);
-    })
-
-    return {
-        results: resultResponse,
-        player : {
-            monay: updatingData.money,
-            items: itemResponse
-          }
-    }
+    return resultResponse;
 }
 
 const getPlayerItemAllData = async(
