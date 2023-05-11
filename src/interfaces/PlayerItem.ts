@@ -15,11 +15,10 @@ interface useItemResponse{
 }
 
 interface useGachaResponse{
-  results: any,
-  player: {
-    monay: number,
-    items: any
-  }
+  itemId: number,
+  name: string,
+  count: number,
+  totalCount: number
 }
 
 interface playerItemAllData {

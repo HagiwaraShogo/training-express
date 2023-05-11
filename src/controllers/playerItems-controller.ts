@@ -79,7 +79,6 @@ export class PlayerItemController
             playerId: parseInt(req.params.id),
             count: req.body.count
         }
-        console.log(parseInt(req.params.id));
         const dbConnection = await dbPool.getConnection();
 
         try{
